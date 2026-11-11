@@ -29,6 +29,7 @@ if (canvas && document.documentElement.classList.contains('has-intro')) {
   scene.add(fillLight);
 
   const die = new THREE.Group();
+  die.scale.setScalar(.6);
   scene.add(die);
 
   const shape = new THREE.Shape();
@@ -117,7 +118,7 @@ if (canvas && document.documentElement.classList.contains('has-intro')) {
     new THREE.ShadowMaterial({ color: 0x142b3a, opacity: .16 })
   );
   floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -1.19;
+  floor.position.y = -.72;
   floor.receiveShadow = true;
   scene.add(floor);
 
