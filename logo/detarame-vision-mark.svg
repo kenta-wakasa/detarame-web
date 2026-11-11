@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">株式会社でたらめ VISIONロゴマーク</title>
+  <desc id="desc">異なる個性が黄金角の秩序によって、それぞれの方向へ大きくひらくマーク</desc>
+  <metadata>
+    Vision: すべての「出た目」が、200%活きる社会へ。
+    Mission: システムの力で、個性と創造性に全力を注げる基盤をつくる。
+    Geometry: five individual forms arranged by the golden angle 137.507764 degrees
+    Form ratio: length / width = phi = 1.6180339887
+    Color logic: individual hues are distributed around the color wheel using golden-angle spacing;
+    saturation and lightness are optically balanced for use on white
+  </metadata>
+
+  <!--
+    Each form is intentionally different in scale, color, and direction.
+    They are not boxed in; an invisible golden-angle system creates harmony
+    while allowing every form to expand outward.
+  -->
+  <g id="individuals" transform="translate(256 256)">
+    <g id="individual-one" transform="rotate(-7) scale(1)">
+      <path d="M18 0 C50 -25 99 -46 144 -22 C123 27 69 50 18 0Z" fill="#6C5AA8"/>
+    </g>
+    <g id="individual-two" transform="rotate(130.507764) scale(.86)">
+      <path d="M18 0 C45 -31 96 -42 144 -22 C118 31 62 44 18 0Z" fill="#F05A47"/>
+    </g>
+    <g id="individual-three" transform="rotate(268.015528) scale(.95)">
+      <path d="M18 0 C54 -22 103 -41 144 -22 C126 22 75 55 18 0Z" fill="#1C9A8B"/>
+    </g>
+    <g id="individual-four" transform="rotate(405.523292) scale(.74)">
+      <path d="M18 0 C42 -29 91 -49 144 -22 C119 34 65 39 18 0Z" fill="#E1A52B"/>
+    </g>
+    <g id="individual-five" transform="rotate(543.031056) scale(.9)">
+      <path d="M18 0 C48 -20 94 -48 144 -22 C130 29 70 49 18 0Z" fill="#4673AD"/>
+    </g>
+  </g>
+
+  <!-- A shared foundation, not a cage: the system remains at the center. -->
+  <circle id="system-core" cx="256" cy="256" r="22" fill="#142B3A"/>
+</svg>

@@ -1,0 +1,6 @@
+.DS_Store
+*.PDF
+previews/
+design-system/
+logo/*
+!logo/detarame-vision-mark.svg

@@ -1,0 +1,129 @@
+:root {
+  --ink: #142b3a;
+  --canvas: #faf9f6;
+  --violet: #6c5aa8;
+  --coral: #f05a47;
+  --teal: #1c9a8b;
+  --gold: #e1a52b;
+  --blue: #4673ad;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--canvas);
+  font-family: "Hiragino Sans", "Yu Gothic", "YuGothic", "Noto Sans JP", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.splash {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: clamp(32px, 7vw, 96px);
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 4vw, 48px);
+  animation: appear 700ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.mark {
+  width: clamp(96px, 18vw, 190px);
+  height: auto;
+  flex: none;
+}
+
+.company-name {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.company-type {
+  margin: 0 0 .25em .12em;
+  color: #5f6e76;
+  font-size: clamp(12px, 1.6vw, 17px);
+  font-weight: 600;
+  letter-spacing: .24em;
+}
+
+.wordmark {
+  font-size: clamp(56px, 11vw, 116px);
+  font-weight: 600;
+  line-height: .95;
+  letter-spacing: .035em;
+  white-space: nowrap;
+}
+
+.identity::after {
+  position: absolute;
+  right: clamp(24px, 5vw, 72px);
+  bottom: clamp(24px, 5vw, 56px);
+  left: clamp(24px, 5vw, 72px);
+  height: 5px;
+  content: "";
+  background: linear-gradient(
+    90deg,
+    var(--violet) 0 20%,
+    var(--coral) 20% 40%,
+    var(--teal) 40% 60%,
+    var(--gold) 60% 80%,
+    var(--blue) 80% 100%
+  );
+  border-radius: 999px;
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: draw 700ms 180ms cubic-bezier(.2, .8, .2, 1) forwards;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes draw {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (max-width: 560px) {
+  .identity {
+    flex-direction: column;
+    gap: 14px;
+    text-align: center;
+  }
+
+  .company-name {
+    align-items: center;
+  }
+
+  .company-type {
+    margin-left: .24em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .identity,
+  .identity::after {
+    animation: none;
+  }
+
+  .identity::after {
+    transform: none;
+  }
+}
