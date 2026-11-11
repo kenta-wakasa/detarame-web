@@ -15,10 +15,33 @@
   <meta name="twitter:description" content="すべての「出た目」を活かしきる社会へ。">
   <meta name="twitter:image" content="https://detarame.net/assets/og.png">
   <title>株式会社でたらめ｜すべての「出た目」を活かしきる社会へ</title>
+  <script>if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('has-intro');</script>
   <link rel="icon" href="logo/detarame-vision-mark.svg" type="image/svg+xml">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
+  <div class="intro-animation" aria-hidden="true">
+    <div class="intro-dice">
+      <div class="dice-cube">
+        <div class="dice-face dice-front"><i class="pip p1"></i><i class="pip p3"></i><i class="pip p5"></i><i class="pip p7"></i><i class="pip p9"></i></div>
+        <div class="dice-face dice-back"><i class="pip p1"></i><i class="pip p9"></i></div>
+        <div class="dice-face dice-right"><i class="pip p1"></i><i class="pip p5"></i><i class="pip p9"></i></div>
+        <div class="dice-face dice-left"><i class="pip p1"></i><i class="pip p3"></i><i class="pip p7"></i><i class="pip p9"></i></div>
+        <div class="dice-face dice-top"><i class="pip p5"></i></div>
+        <div class="dice-face dice-bottom"><i class="pip p1"></i><i class="pip p3"></i><i class="pip p4"></i><i class="pip p6"></i><i class="pip p7"></i><i class="pip p9"></i></div>
+      </div>
+    </div>
+    <svg class="intro-logo" viewBox="0 0 512 512" focusable="false">
+      <g transform="translate(256 256)">
+        <g class="intro-petal petal-1"><g transform="rotate(-7)"><path d="M18 0 C50 -25 99 -46 144 -22 C123 27 69 50 18 0Z" fill="#6C5AA8"/></g></g>
+        <g class="intro-petal petal-2"><g transform="rotate(130.507764) scale(.86)"><path d="M18 0 C45 -31 96 -42 144 -22 C118 31 62 44 18 0Z" fill="#F05A47"/></g></g>
+        <g class="intro-petal petal-3"><g transform="rotate(268.015528) scale(.95)"><path d="M18 0 C54 -22 103 -41 144 -22 C126 22 75 55 18 0Z" fill="#1C9A8B"/></g></g>
+        <g class="intro-petal petal-4"><g transform="rotate(405.523292) scale(.74)"><path d="M18 0 C42 -29 91 -49 144 -22 C119 34 65 39 18 0Z" fill="#E1A52B"/></g></g>
+        <g class="intro-petal petal-5"><g transform="rotate(543.031056) scale(.9)"><path d="M18 0 C48 -20 94 -48 144 -22 C130 29 70 49 18 0Z" fill="#4673AD"/></g></g>
+      </g>
+      <circle class="intro-core" cx="256" cy="256" r="22" fill="#142B3A"/>
+    </svg>
+  </div>
   <a class="skip-link" href="#content">本文へ移動</a>
   <header class="site-header">
     <a class="brand" href="#top" aria-label="株式会社でたらめ トップへ">
@@ -193,5 +216,23 @@
     <a class="footer-contact" href="mailto:contact@detarame.net">contact@detarame.net</a>
     <small class="copyright">&copy; DETARAME INC.</small>
   </footer>
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const intro = document.querySelector('.intro-animation');
+      if (!root.classList.contains('has-intro') || !intro) return;
+      let finished = false;
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        root.classList.remove('has-intro');
+        intro.remove();
+      };
+      intro.addEventListener('animationend', (event) => {
+        if (event.target === intro && event.animationName === 'intro-exit') finish();
+      });
+      window.setTimeout(finish, 5600);
+    })();
+  </script>
 </body>
 </html>
