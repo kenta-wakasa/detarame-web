@@ -155,35 +155,36 @@ if (canvas && document.documentElement.classList.contains('has-intro')) {
       const p = segment(elapsed, 0, 720);
       x = THREE.MathUtils.lerp(-1.45, -.9, p);
       y = THREE.MathUtils.lerp(6.2, 0, p * p);
-      rx = THREE.MathUtils.lerp(.45, -.3, p);
-      ry = THREE.MathUtils.lerp(-.35, .2, p);
+      rx = THREE.MathUtils.lerp(-Math.PI * 2.4, -Math.PI * 1.25, p);
+      ry = THREE.MathUtils.lerp(Math.PI * 1.6, Math.PI * .9, p);
       rz = THREE.MathUtils.lerp(-Math.PI * 3.8, -Math.PI * 3, p);
     } else if (elapsed < 1120) {
       const p = segment(elapsed, 720, 1120);
       x = THREE.MathUtils.lerp(-.9, -.38, p);
       y = bounce(p, 1.35);
-      rx = THREE.MathUtils.lerp(-.3, .18, p);
-      ry = THREE.MathUtils.lerp(.2, -.12, p);
+      rx = THREE.MathUtils.lerp(-Math.PI * 1.25, -Math.PI * .5, p);
+      ry = THREE.MathUtils.lerp(Math.PI * .9, Math.PI * .25, p);
       rz = THREE.MathUtils.lerp(-Math.PI * 3, -Math.PI * 2, p);
     } else if (elapsed < 1410) {
       const p = segment(elapsed, 1120, 1410);
       x = THREE.MathUtils.lerp(-.38, -.04, p);
       y = bounce(p, .62);
-      rx = THREE.MathUtils.lerp(.18, -.1, p);
-      ry = THREE.MathUtils.lerp(-.12, .06, p);
+      rx = THREE.MathUtils.lerp(-Math.PI * .5, Math.PI * .35, p);
+      ry = THREE.MathUtils.lerp(Math.PI * .25, -Math.PI * .45, p);
       rz = THREE.MathUtils.lerp(-Math.PI * 2, -Math.PI * 1.15, p);
     } else if (elapsed < 1620) {
       const p = segment(elapsed, 1410, 1620);
       x = THREE.MathUtils.lerp(-.04, .14, p);
       y = bounce(p, .25);
-      rx = THREE.MathUtils.lerp(-.1, .04, p);
-      ry = THREE.MathUtils.lerp(.06, 0, p);
+      rx = THREE.MathUtils.lerp(Math.PI * .35, -Math.PI * .18, p);
+      ry = THREE.MathUtils.lerp(-Math.PI * .45, Math.PI * .18, p);
       rz = THREE.MathUtils.lerp(-Math.PI * 1.15, -Math.PI * .48, p);
     } else if (elapsed < 1860) {
       const p = easeInOutCubic(segment(elapsed, 1620, 1860));
       x = THREE.MathUtils.lerp(.14, 0, p);
       y = Math.abs(Math.sin(p * Math.PI * 2)) * .035 * (1 - p);
-      rx = THREE.MathUtils.lerp(.04, 0, p);
+      rx = THREE.MathUtils.lerp(-Math.PI * .18, 0, p);
+      ry = THREE.MathUtils.lerp(Math.PI * .18, 0, p);
       rz = THREE.MathUtils.lerp(-Math.PI * .48, 0, p);
     }
 
