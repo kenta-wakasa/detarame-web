@@ -12,11 +12,7 @@ if (canvas && document.documentElement.classList.contains('has-intro')) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const camera = new THREE.PerspectiveCamera(42, 1, .1, 40);
-  camera.up.set(0, 0, -1);
-  const startCamera = new THREE.Vector3(6.5, 5, 11.5);
-  const mobileStartCamera = new THREE.Vector3(7.8, 6.1, 15);
-  const endCamera = new THREE.Vector3(0, 3.25, .001);
-  const startTarget = new THREE.Vector3(0, 0, 0);
+  const startTarget = new THREE.Vector3(0, .25, 0);
   const endTarget = new THREE.Vector3(0, .8, 0);
   const cameraTarget = new THREE.Vector3();
 
@@ -124,15 +120,16 @@ if (canvas && document.documentElement.classList.contains('has-intro')) {
   scene.add(floor);
 
   const clamp = (value) => Math.max(0, Math.min(1, value));
-  const smoothstep = (value) => value * value * (3 - 2 * value);
   const easeInOutCubic = (value) => value < .5
     ? 4 * value * value * value
     : 1 - Math.pow(-2 * value + 2, 3) / 2;
+  const segment = (elapsed, start, end) => clamp((elapsed - start) / (end - start));
+  const bounce = (value, height) => Math.sin(value * Math.PI) * height;
   const startedAt = performance.now();
 
   const resize = () => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
@@ -148,19 +145,58 @@ if (canvas && document.documentElement.classList.contains('has-intro')) {
     }
 
     const elapsed = now - startedAt;
-    const roll = clamp(elapsed / 1650);
-    const rollingEase = smoothstep(roll);
-    const startX = camera.aspect < .8 ? -5.2 : -7.2;
-    die.position.x = THREE.MathUtils.lerp(startX, 0, rollingEase);
-    die.position.y = Math.abs(Math.sin(roll * Math.PI * 5)) * .055 * (1 - roll);
-    die.rotation.set(
-      THREE.MathUtils.lerp(-.16, 0, rollingEase),
-      THREE.MathUtils.lerp(-.24, 0, rollingEase),
-      THREE.MathUtils.lerp(-Math.PI * 5, 0, rollingEase)
-    );
+    let x = 0;
+    let y = 0;
+    let rx = 0;
+    let ry = 0;
+    let rz = 0;
 
-    const zoom = easeInOutCubic(clamp((elapsed - 1820) / 1450));
-    camera.position.lerpVectors(camera.aspect < .8 ? mobileStartCamera : startCamera, endCamera, zoom);
+    if (elapsed < 720) {
+      const p = segment(elapsed, 0, 720);
+      x = THREE.MathUtils.lerp(-1.45, -.9, p);
+      y = THREE.MathUtils.lerp(6.2, 0, p * p);
+      rx = THREE.MathUtils.lerp(.45, -.3, p);
+      ry = THREE.MathUtils.lerp(-.35, .2, p);
+      rz = THREE.MathUtils.lerp(-Math.PI * 3.8, -Math.PI * 3, p);
+    } else if (elapsed < 1120) {
+      const p = segment(elapsed, 720, 1120);
+      x = THREE.MathUtils.lerp(-.9, -.38, p);
+      y = bounce(p, 1.35);
+      rx = THREE.MathUtils.lerp(-.3, .18, p);
+      ry = THREE.MathUtils.lerp(.2, -.12, p);
+      rz = THREE.MathUtils.lerp(-Math.PI * 3, -Math.PI * 2, p);
+    } else if (elapsed < 1410) {
+      const p = segment(elapsed, 1120, 1410);
+      x = THREE.MathUtils.lerp(-.38, -.04, p);
+      y = bounce(p, .62);
+      rx = THREE.MathUtils.lerp(.18, -.1, p);
+      ry = THREE.MathUtils.lerp(-.12, .06, p);
+      rz = THREE.MathUtils.lerp(-Math.PI * 2, -Math.PI * 1.15, p);
+    } else if (elapsed < 1620) {
+      const p = segment(elapsed, 1410, 1620);
+      x = THREE.MathUtils.lerp(-.04, .14, p);
+      y = bounce(p, .25);
+      rx = THREE.MathUtils.lerp(-.1, .04, p);
+      ry = THREE.MathUtils.lerp(.06, 0, p);
+      rz = THREE.MathUtils.lerp(-Math.PI * 1.15, -Math.PI * .48, p);
+    } else if (elapsed < 1860) {
+      const p = easeInOutCubic(segment(elapsed, 1620, 1860));
+      x = THREE.MathUtils.lerp(.14, 0, p);
+      y = Math.abs(Math.sin(p * Math.PI * 2)) * .035 * (1 - p);
+      rx = THREE.MathUtils.lerp(.04, 0, p);
+      rz = THREE.MathUtils.lerp(-Math.PI * .48, 0, p);
+    }
+
+    die.position.set(x, y, 0);
+    die.rotation.set(rx, ry, rz);
+
+    const zoom = easeInOutCubic(clamp((elapsed - 1960) / 1450));
+    floor.material.opacity = .16 * (1 - zoom);
+    const startRadius = camera.aspect < .9 ? 14.5 : 12.5;
+    const radius = THREE.MathUtils.lerp(startRadius, 4.6, zoom);
+    const angle = zoom * Math.PI / 2;
+    camera.position.set(0, .35 * Math.cos(angle) + radius * Math.sin(angle), radius * Math.cos(angle) + .001);
+    camera.up.set(0, 1 - zoom, -zoom).normalize();
     cameraTarget.lerpVectors(startTarget, endTarget, zoom);
     camera.fov = 42;
     camera.updateProjectionMatrix();
