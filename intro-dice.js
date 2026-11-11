@@ -123,8 +123,60 @@ if (canvas && document.documentElement.classList.contains('has-intro')) {
   const easeInOutCubic = (value) => value < .5
     ? 4 * value * value * value
     : 1 - Math.pow(-2 * value + 2, 3) / 2;
-  const segment = (elapsed, start, end) => clamp((elapsed - start) / (end - start));
-  const bounce = (value, height) => Math.sin(value * Math.PI) * height;
+  const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
+
+  const gravity = 24;
+  const restitution = .5;
+  const physicsSegments = [];
+  let segmentStart = 0;
+  let segmentX = -1.5;
+  let segmentY = 6.2;
+  let velocityX = 1.1;
+  let velocityY = -.35;
+  let orientation = new THREE.Quaternion().setFromEuler(new THREE.Euler(-.7, .55, -1.1));
+  let angularVelocity = new THREE.Vector3(3.5, 2.35, 5.1);
+
+  const rotateQuaternion = (quaternion, velocity, duration) => {
+    const speed = velocity.length();
+    if (!speed) return quaternion.clone();
+    const delta = new THREE.Quaternion().setFromAxisAngle(velocity.clone().normalize(), speed * duration);
+    return quaternion.clone().multiply(delta).normalize();
+  };
+
+  for (let impact = 0; impact < 4; impact += 1) {
+    const flightTime = segmentY > 0
+      ? (velocityY + Math.sqrt(velocityY * velocityY + 2 * gravity * segmentY)) / gravity
+      : (2 * velocityY) / gravity;
+    const endOrientation = rotateQuaternion(orientation, angularVelocity, flightTime);
+    const endX = segmentX + velocityX * flightTime;
+    physicsSegments.push({
+      start: segmentStart,
+      end: segmentStart + flightTime,
+      x: segmentX,
+      y: segmentY,
+      vx: velocityX,
+      vy: velocityY,
+      orientation: orientation.clone(),
+      angularVelocity: angularVelocity.clone()
+    });
+
+    const impactVelocity = velocityY - gravity * flightTime;
+    segmentStart += flightTime;
+    segmentX = endX;
+    segmentY = 0;
+    velocityY = -impactVelocity * restitution;
+    velocityX *= .76;
+    orientation = endOrientation;
+    angularVelocity.multiplyScalar(.7);
+    angularVelocity.x += impact % 2 === 0 ? .34 : -.22;
+    angularVelocity.y += impact % 2 === 0 ? -.18 : .28;
+    angularVelocity.z *= .82;
+  }
+
+  const physicsEnd = segmentStart;
+  const physicsEndX = segmentX;
+  const physicsEndOrientation = orientation.clone();
+  const settledOrientation = new THREE.Quaternion();
   const startedAt = performance.now();
 
   const resize = () => {
@@ -145,53 +197,23 @@ if (canvas && document.documentElement.classList.contains('has-intro')) {
     }
 
     const elapsed = now - startedAt;
-    let x = 0;
-    let y = 0;
-    let rx = 0;
-    let ry = 0;
-    let rz = 0;
-
-    if (elapsed < 720) {
-      const p = segment(elapsed, 0, 720);
-      x = THREE.MathUtils.lerp(-1.45, -.9, p);
-      y = THREE.MathUtils.lerp(6.2, 0, p * p);
-      rx = THREE.MathUtils.lerp(-Math.PI * 2.4, -Math.PI * 1.25, p);
-      ry = THREE.MathUtils.lerp(Math.PI * 1.6, Math.PI * .9, p);
-      rz = THREE.MathUtils.lerp(-Math.PI * 3.8, -Math.PI * 3, p);
-    } else if (elapsed < 1120) {
-      const p = segment(elapsed, 720, 1120);
-      x = THREE.MathUtils.lerp(-.9, -.38, p);
-      y = bounce(p, 1.35);
-      rx = THREE.MathUtils.lerp(-Math.PI * 1.25, -Math.PI * .5, p);
-      ry = THREE.MathUtils.lerp(Math.PI * .9, Math.PI * .25, p);
-      rz = THREE.MathUtils.lerp(-Math.PI * 3, -Math.PI * 2, p);
-    } else if (elapsed < 1410) {
-      const p = segment(elapsed, 1120, 1410);
-      x = THREE.MathUtils.lerp(-.38, -.04, p);
-      y = bounce(p, .62);
-      rx = THREE.MathUtils.lerp(-Math.PI * .5, Math.PI * .35, p);
-      ry = THREE.MathUtils.lerp(Math.PI * .25, -Math.PI * .45, p);
-      rz = THREE.MathUtils.lerp(-Math.PI * 2, -Math.PI * 1.15, p);
-    } else if (elapsed < 1620) {
-      const p = segment(elapsed, 1410, 1620);
-      x = THREE.MathUtils.lerp(-.04, .14, p);
-      y = bounce(p, .25);
-      rx = THREE.MathUtils.lerp(Math.PI * .35, -Math.PI * .18, p);
-      ry = THREE.MathUtils.lerp(-Math.PI * .45, Math.PI * .18, p);
-      rz = THREE.MathUtils.lerp(-Math.PI * 1.15, -Math.PI * .48, p);
-    } else if (elapsed < 1860) {
-      const p = easeInOutCubic(segment(elapsed, 1620, 1860));
-      x = THREE.MathUtils.lerp(.14, 0, p);
-      y = Math.abs(Math.sin(p * Math.PI * 2)) * .035 * (1 - p);
-      rx = THREE.MathUtils.lerp(-Math.PI * .18, 0, p);
-      ry = THREE.MathUtils.lerp(Math.PI * .18, 0, p);
-      rz = THREE.MathUtils.lerp(-Math.PI * .48, 0, p);
+    const seconds = elapsed / 1000;
+    const activeSegment = physicsSegments.find(({ start, end }) => seconds >= start && seconds < end);
+    if (activeSegment) {
+      const localTime = seconds - activeSegment.start;
+      die.position.set(
+        activeSegment.x + activeSegment.vx * localTime,
+        Math.max(0, activeSegment.y + activeSegment.vy * localTime - .5 * gravity * localTime * localTime),
+        0
+      );
+      die.quaternion.copy(rotateQuaternion(activeSegment.orientation, activeSegment.angularVelocity, localTime));
+    } else {
+      const settle = easeOutCubic(clamp((seconds - physicsEnd) / .34));
+      die.position.set(THREE.MathUtils.lerp(physicsEndX, 0, settle), 0, 0);
+      die.quaternion.copy(physicsEndOrientation).slerp(settledOrientation, settle);
     }
 
-    die.position.set(x, y, 0);
-    die.rotation.set(rx, ry, rz);
-
-    const zoom = easeInOutCubic(clamp((elapsed - 1960) / 1450));
+    const zoom = easeInOutCubic(clamp((elapsed - 2250) / 1350));
     floor.material.opacity = .16 * (1 - zoom);
     const startRadius = camera.aspect < .9 ? 14.5 : 12.5;
     const radius = THREE.MathUtils.lerp(startRadius, 4.6, zoom);
