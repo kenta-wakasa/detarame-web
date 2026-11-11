@@ -21,16 +21,7 @@
 </head>
 <body>
   <div class="intro-animation" aria-hidden="true">
-    <div class="intro-dice">
-      <div class="dice-cube">
-        <div class="dice-face dice-front"><i class="pip p1"></i><i class="pip p3"></i><i class="pip p5"></i><i class="pip p7"></i><i class="pip p9"></i></div>
-        <div class="dice-face dice-back"><i class="pip p1"></i><i class="pip p9"></i></div>
-        <div class="dice-face dice-right"><i class="pip p1"></i><i class="pip p5"></i><i class="pip p9"></i></div>
-        <div class="dice-face dice-left"><i class="pip p1"></i><i class="pip p3"></i><i class="pip p7"></i><i class="pip p9"></i></div>
-        <div class="dice-face dice-top"><i class="pip p5"></i></div>
-        <div class="dice-face dice-bottom"><i class="pip p1"></i><i class="pip p3"></i><i class="pip p4"></i><i class="pip p6"></i><i class="pip p7"></i><i class="pip p9"></i></div>
-      </div>
-    </div>
+    <canvas class="intro-canvas"></canvas>
     <svg class="intro-logo" viewBox="0 0 512 512" focusable="false">
       <g transform="translate(256 256)">
         <g class="intro-petal petal-1"><g transform="rotate(-7)"><path d="M18 0 C50 -25 99 -46 144 -22 C123 27 69 50 18 0Z" fill="#6C5AA8"/></g></g>
@@ -216,6 +207,14 @@
     <a class="footer-contact" href="mailto:contact@detarame.net">contact@detarame.net</a>
     <small class="copyright">&copy; DETARAME INC.</small>
   </footer>
+  <script type="module">
+    if (document.documentElement.classList.contains('has-intro')) {
+      import('./intro-dice.js').catch(() => {
+        document.documentElement.classList.remove('has-intro');
+        document.querySelector('.intro-animation')?.remove();
+      });
+    }
+  </script>
   <script>
     (() => {
       const root = document.documentElement;
