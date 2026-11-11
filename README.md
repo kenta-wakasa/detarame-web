@@ -2,4 +2,4 @@
 
 株式会社でたらめの公式Webサイトです。
 
-https://kenta-wakasa.github.io/detarame-web/
+https://detarame.net/
