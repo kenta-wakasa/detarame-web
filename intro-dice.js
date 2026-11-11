@@ -55,19 +55,21 @@ if (canvas && document.documentElement.classList.contains('has-intro')) {
   });
   bodyGeometry.translate(0, 0, -1);
   bodyGeometry.computeVertexNormals();
-  const body = new THREE.Mesh(bodyGeometry, new THREE.MeshPhysicalMaterial({
+  const body = new THREE.Mesh(bodyGeometry, new THREE.MeshStandardMaterial({
     color: 0xf7f7f4,
-    roughness: .24,
-    metalness: 0,
-    clearcoat: .38,
-    clearcoatRoughness: .3
+    roughness: .94,
+    metalness: 0
   }));
   body.castShadow = true;
   body.receiveShadow = true;
   die.add(body);
 
   const pipGeometry = new THREE.CylinderGeometry(.125, .125, .035, 28);
-  const pipMaterial = new THREE.MeshStandardMaterial({ color: 0x142b3a, roughness: .38 });
+  const pipMaterial = new THREE.MeshStandardMaterial({
+    color: 0x142b3a,
+    roughness: .92,
+    metalness: 0
+  });
   const patterns = {
     1: [[0, 0]],
     2: [[-.46, .46], [.46, -.46]],
@@ -167,16 +169,21 @@ if (canvas && document.documentElement.classList.contains('has-intro')) {
     velocityY = -impactVelocity * restitution;
     velocityX *= .76;
     orientation = endOrientation;
-    angularVelocity.multiplyScalar(.7);
+    angularVelocity.multiplyScalar(.62);
     angularVelocity.x += impact % 2 === 0 ? .34 : -.22;
     angularVelocity.y += impact % 2 === 0 ? -.18 : .28;
     angularVelocity.z *= .82;
   }
 
+  const landingAlignment = orientation.clone().invert();
+  physicsSegments.forEach((physicsSegment) => {
+    physicsSegment.orientation.premultiply(landingAlignment).normalize();
+  });
+  orientation.premultiply(landingAlignment).normalize();
+
   const physicsEnd = segmentStart;
   const physicsEndX = segmentX;
   const physicsEndOrientation = orientation.clone();
-  const settledOrientation = new THREE.Quaternion();
   const startedAt = performance.now();
 
   const resize = () => {
@@ -210,13 +217,13 @@ if (canvas && document.documentElement.classList.contains('has-intro')) {
     } else {
       const settle = easeOutCubic(clamp((seconds - physicsEnd) / .34));
       die.position.set(THREE.MathUtils.lerp(physicsEndX, 0, settle), 0, 0);
-      die.quaternion.copy(physicsEndOrientation).slerp(settledOrientation, settle);
+      die.quaternion.copy(physicsEndOrientation);
     }
 
     const zoom = easeInOutCubic(clamp((elapsed - 2250) / 1350));
     floor.material.opacity = .16 * (1 - zoom);
     const startRadius = camera.aspect < .9 ? 14.5 : 12.5;
-    const radius = THREE.MathUtils.lerp(startRadius, 4.6, zoom);
+    const radius = THREE.MathUtils.lerp(startRadius, 7.8, zoom);
     const angle = zoom * Math.PI / 2;
     camera.position.set(0, .35 * Math.cos(angle) + radius * Math.sin(angle), radius * Math.cos(angle) + .001);
     camera.up.set(0, 1 - zoom, -zoom).normalize();
